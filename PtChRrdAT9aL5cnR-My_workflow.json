@@ -1,0 +1,381 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1CXhxhD0YUgs0I66j0YvweDOobMwazf5Bbphi-ZaHpQU",
+          "mode": "list",
+          "cachedResultName": "Planilha sem título12",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CXhxhD0YUgs0I66j0YvweDOobMwazf5Bbphi-ZaHpQU/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        384,
+        384
+      ],
+      "id": "609ccae8-10e5-4789-ae24-d09c86db48c5",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "lJ59OOTDGhtx2Qdw",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        384
+      ],
+      "id": "3f35dd0f-b530-4ab6-9fce-d22a7fddcbbc",
+      "name": "Sheet"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Act as a tech-savvy freelancer.\n\nBusiness: {{$json.name}}\nCity: {{$json.city}}\nCategory: {{$json.business_category}}\n\nWrite a short email.\n\nStart with \"Hi\".\n\nMention you found them on Google Maps and noticed they rely mostly on Facebook.\n\nExplain that most customers in {{$json.city}} search Google first and may go to competitors if they don't see a professional site.\n\nSay you help local businesses capture these customers with simple high-conversion websites.\n\nOffer a quick 15-second mockup for {{$json.name}} and ask if you can send it.\n\nKeep under 80 words.\n\nSign: Ricardo\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1056,
+        176
+      ],
+      "id": "59f05310-4c79-47ad-9b5f-8aa3b189f484",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        400
+      ],
+      "id": "b7a7913d-88ad-45df-ae57-f6c37c00155a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Kc9Lk4ZwZsqBvpBW",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        256
+      ],
+      "id": "a8d82eab-e669-42ab-965f-4e83f7ad9664",
+      "name": "Wait",
+      "webhookId": "892d2635-e0d9-4fbe-9386-2bbd04e6155e"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"Loop Over Items\"].json[\"emails\"] }}",
+        "subject": "=Quick question for {{ $node[\"Loop Over Items\"].json[\"name\"] }}",
+        "emailType": "text",
+        "message": "={{$json.output}}\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        384
+      ],
+      "id": "22a1ab5c-3327-4d1e-bc4a-89a5d23d5b69",
+      "name": "Send a message",
+      "webhookId": "446ae1bb-6f7a-4f54-b834-257d3349305d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PRJKrFXNlaNs4oNi",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        -80
+      ],
+      "id": "831b974b-cffe-4efc-ae79-059cd927262b",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PRJKrFXNlaNs4oNi",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64",
+          "mode": "list",
+          "cachedResultName": "res_emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Data": "={{ new Date(parseInt($json.internalDate)).toLocaleDateString('pt-BR') }}",
+            "Nome": "={{ $json.From }}",
+            "Email": "={{ $json.From }}",
+            "Mensagem": "={{ $json.snippet }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        -80
+      ],
+      "id": "5e3c9c4e-a11c-4d46-b027-5d3b34dab65b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4SFF6Uuo4cKcN5PA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        224,
+        368
+      ],
+      "id": "499b6c96-ad82-44c4-997c-d25c55c2bb79",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        384
+      ],
+      "id": "b5245229-aae8-4470-adcb-87d56499cf7f",
+      "name": "Loop Over Items"
+    }
+  ],
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1774488943,
+        "possibleDuplicates": [
+          "19d27c87f8dbfaed",
+          "19d1855714edade9"
+        ]
+      }
+    }
+  },
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

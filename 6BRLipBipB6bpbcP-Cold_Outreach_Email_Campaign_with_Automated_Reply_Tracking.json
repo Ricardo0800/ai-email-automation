@@ -1,0 +1,437 @@
+{
+  "name": "Cold Outreach Email Campaign with Automated Reply Tracking",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "94b126a0-076b-4b63-9390-98bc333f087c",
+      "name": "Start Campaign",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        256,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1P6FkivMstloCikBCzZy6eIB1gUa4MzaZH_bPJ1nx4gE",
+          "mode": "list",
+          "cachedResultName": "restaurantes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P6FkivMstloCikBCzZy6eIB1gUa4MzaZH_bPJ1nx4gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 810382267,
+          "mode": "list",
+          "cachedResultName": "dataset_businesses-without-websites-leads-scraper-google-maps_2026-03-16_13-34-44-164",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P6FkivMstloCikBCzZy6eIB1gUa4MzaZH_bPJ1nx4gE/edit#gid=810382267"
+        },
+        "options": {}
+      },
+      "id": "0e6322c5-c544-46b1-a198-701689bb8515",
+      "name": "Get Leads from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        432
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4SFF6Uuo4cKcN5PA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "25aa93f9-a146-498a-b5ba-f853b9532952",
+      "name": "Process One Lead at a Time",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        704,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "id": "01709fec-e03d-48ce-bb7d-fecdf44c16fb",
+      "name": "Wait 5 Minutes",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        928,
+        304
+      ],
+      "webhookId": "e63e0d24-fdcf-48e8-926f-a5528a916f89",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"Process One Lead at a Time\"].json.emails }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.message }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "={{ $json.sender_name || 'Web Developer' }}"
+        }
+      },
+      "id": "a0eb8f82-621a-45ef-9996-ee92c6f81046",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        432
+      ],
+      "webhookId": "a56dfd4b-670b-452f-84fd-fc344d0d6357",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yn8LVGE36udWmlVE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "INBOX"
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2c58472-c6e4-4784-bdf3-18fb1463e001",
+      "name": "Monitor Incoming Emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        656
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yn8LVGE36udWmlVE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.headers['in-reply-to'] }}",
+              "operator": {
+                "type": "object",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "bd9b3689-be47-4541-a709-4b6454420683",
+      "name": "Filter Only Replies",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64",
+          "mode": "list",
+          "cachedResultName": "res_emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13I2aPOdw9Fet8QLuUN1aYr_AW-_EQaZTlCG7kNaTm64/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b2a0362c-e64f-427a-8c01-354e701ccff4",
+      "name": "Save Reply to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4SFF6Uuo4cKcN5PA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= $itemIndex % 2 === 0 ? \n`You are a senior sales developer. Write a cold email for ${$json.name} in ${$json.city}.\nCONTEXT: They are a ${$json.business_category} with great reviews on Facebook, but NO professional website. \nSTRATEGY: Template 5.1 (Direct Contact).\n- Subject: Modern website concept for ${$json.name}\n- Body: Start with \"Hi\". Mention you saw their excellent reviews in ${$json.city} and their active Facebook page, but explain that a dedicated site would capture more customers from Google.\n- Link: https://sitezinho-kappa.vercel.app/?nome=${encodeURIComponent($json.name)}&cidade=${encodeURIComponent($json.city)}&tipo=${encodeURIComponent($json.business_category.split('|')[0].replace(/_/g, ' '))}&tel=${encodeURIComponent($json.phone_number)}&fb=${encodeURIComponent($json.facebook)}\n- Offer: High-conversion layout. Final version in 5 days for $500.\n- Sign: Ricardo. Under 70 words. No Markdown for links (output URL as plain text).` \n\nThis email its a correction by a wrong link sent in past email. Then ... include sorry in the content ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1152,
+        304
+      ],
+      "id": "834caf75-66a9-4d95-aad8-6bcc680c7053",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        528
+      ],
+      "id": "35c563c5-055a-4fcf-90a1-4911ad9a7302",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D8sCb1b0CBeRxjJZ",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = items[0].json.output;\n// Puxa o e-mail direto da planilha para não ter erro\nconst email = items[0].json.email || items[0].json.emails; \n\nconst lines = output.split('\\n');\nconst subject = lines[0].replace('Subject: ', '').trim();\n\n// Remove o subject do corpo e limpa espaços\nlet body = lines.slice(1).join('\\n').trim();\n\n// Transforma o texto em HTML amigável\nconst htmlMessage = `\n  <div style=\"font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #333; line-height: 1.6;\">\n    ${body.replace(/\\n/g, '<br>')}\n  </div>\n`;\n\nreturn [{\n  json: {\n    subject: subject,\n    message: htmlMessage,\n    email: email\n  }\n}];"
+      },
+      "id": "b9f9a4f3-be5d-4ab8-b249-934b52ae709d",
+      "name": "Parse Email Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        304
+      ]
+    }
+  ],
+  "connections": {
+    "Start Campaign": {
+      "main": [
+        [
+          {
+            "node": "Get Leads from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Leads from Sheet": {
+      "main": [
+        [
+          {
+            "node": "Process One Lead at a Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process One Lead at a Time": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait 5 Minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Process One Lead at a Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Incoming Emails": {
+      "main": [
+        [
+          {
+            "node": "Filter Only Replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Only Replies": {
+      "main": [
+        [
+          {
+            "node": "Save Reply to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Email Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email Fields": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Monitor Incoming Emails": {
+      "Monitor Incoming Emails": {
+        "lastTimeChecked": 1774488943,
+        "possibleDuplicates": [
+          "19d27c87f8dbfaed",
+          "19d1855714edade9"
+        ]
+      }
+    }
+  },
+  "pinData": {
+    "Start Campaign": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
