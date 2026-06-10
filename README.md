@@ -20,6 +20,14 @@ Este projeto automatiza o processo de:
 - ✅ Workflows customizáveis via n8n
 - ✅ Respostas automáticas e personalizadas
 
+## 🎬 Visualização do Fluxo de Automação
+
+### Fluxo n8n - Cold Outreach Email Campaign with Automated Reply Tracking
+
+![N8N Workflow - Cold Outreach Email Campaign](Captura%20de%20Tela%20(2803).png)
+
+*Fluxo completo da automação de e-mails com rastreamento de respostas, integração com Google Gemini e envio automático via Gmail*
+
 ## 🛠️ Tech Stack
 
 | Tecnologia | Descrição |
